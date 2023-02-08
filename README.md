@@ -1,13 +1,12 @@
-# Need Maintainer for this Package.
+# PayPal IPN for laravel
 
-This Package is just an implementaion of the IPN class of this Repository
+This Package is a detached fork of
 
-https://github.com/Quixotix/PHP-PayPal-IPN
+    https://github.com/sh0umik/Laravel5-PaypalIPN
 
+add this to your "require" in composer.json
 
-add this to your "require-dev" in composer.json
-
-    "fahim/laravel5-paypal-ipn": "1.0.*"
+    "8ctopus/laravel-paypal-ipn": "1.0.*"
 
 
 PHP-PayPal-IPN
