@@ -1,4 +1,6 @@
-<?php namespace Fahim\PaypalIPN;
+<?php
+
+namespace Oct8pus\PaypalIPN;
 
 use Illuminate\Support\ServiceProvider;
 
