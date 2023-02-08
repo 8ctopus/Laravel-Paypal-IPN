@@ -1,8 +1,12 @@
 {
-    "name": "fahim/laravel5-paypal-ipn",
-    "description": "Paypal IPN class for Laravel 5",
+    "name": "8ctopus/laravel-paypal-ipn",
+    "description": "Paypal IPN class for Laravel",
     "license": "MIT",
     "authors": [
+        {
+            "name": "8ctopus",
+            "email": "hello@octopuslabs.io"
+        }
         {
             "name": "Fahim Shariar",
             "email": "thebdcoder@gmail.com"
@@ -10,11 +14,11 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=7"
     },
     "autoload": {
         "psr-4": {
-            "Fahim\\PaypalIPN\\": "src/"
+            "Oct8pus\\PaypalIPN\\": "src/"
         }
     }
 }
