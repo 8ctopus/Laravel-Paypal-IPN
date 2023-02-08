@@ -19,11 +19,11 @@ of POST data, post back to PayPal, and parsing of the response from PayPal.
 
 Service for Laravel
 
-	'Fahim\PaypalIPN\PaypalIPNServiceProvider',
+	'Oct8pus\PaypalIPN\PaypalIPNServiceProvider',
 		
 Use case
 ```php
-use Fahim\PaypalIPN\PaypalIPNListener;
+use Oct8pus\PaypalIPN\PaypalIPNListener;
 
 public function paypalIpn()
 {
