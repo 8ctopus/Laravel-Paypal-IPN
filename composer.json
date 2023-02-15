@@ -1,6 +1,9 @@
 {
     "name": "8ctopus/laravel-paypal-ipn",
+    "type": "library",
     "description": "Paypal IPN class for Laravel",
+    "keywords": ["paypal ipn", "laravel"],
+    "homepage": "https://github.com/8ctopus/laravel-paypal-ipn",
     "license": "MIT",
     "authors": [
         {
