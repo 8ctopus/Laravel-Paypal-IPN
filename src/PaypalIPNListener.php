@@ -87,7 +87,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getPostUri(): string
+    public function getPostUri() : string
     {
         return $this->post_uri;
     }
@@ -100,7 +100,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getResponse(): string
+    public function getResponse() : string
     {
         return $this->response;
     }
@@ -113,7 +113,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getResponseStatus(): string
+    public function getResponseStatus() : string
     {
         return $this->response_status;
     }
@@ -127,7 +127,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getTextReport(): string
+    public function getTextReport() : string
     {
         $r = '';
         // date and POST url
@@ -171,7 +171,7 @@ class PaypalIPNListener
      *
      * @throws Exception
      */
-    public function processIpn(?array $post_data = null): bool
+    public function processIpn(?array $post_data = null) : bool
     {
         $encoded_data = 'cmd=_notify-validate';
 
@@ -221,7 +221,7 @@ class PaypalIPNListener
      *
      * @throws Exception
      */
-    public function requirePostMethod(): void
+    public function requirePostMethod() : void
     {
         // require POST requests
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -242,7 +242,7 @@ class PaypalIPNListener
      *
      * @throws Exception
      */
-    protected function curlPost(string $encoded_data): void
+    protected function curlPost(string $encoded_data) : void
     {
         if ($this->use_ssl) {
             $uri = 'https://' . $this->getPaypalHost() . '/cgi-bin/webscr';
@@ -291,7 +291,7 @@ class PaypalIPNListener
      *
      * @throws Exception
      */
-    protected function fsockPost(string $encoded_data): void
+    protected function fsockPost(string $encoded_data) : void
     {
         if ($this->use_ssl) {
             $uri = 'ssl://' . $this->getPaypalHost();
