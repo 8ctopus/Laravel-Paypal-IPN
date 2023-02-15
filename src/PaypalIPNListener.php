@@ -14,19 +14,18 @@ use Exception;
  *
  *  https://github.com/Quixotix/PHP-PayPal-IPN
  *
- * @package    PHP-PayPal-IPN
  * @author     Micah Carrick
  * @copyright  (c) 2012 - Micah Carrick
+ *
  * @version    2.1.0
  */
 class PaypalIPNListener
 {
-
     /**
      *  If true, the recommended cURL PHP library is used to send the post back
      *  to PayPal. If flase then fsockopen() is used. Default true.
      *
-     * @var boolean
+     * @var bool
      */
     public $use_curl = true;
 
@@ -34,7 +33,7 @@ class PaypalIPNListener
      *  If true, explicitly sets cURL to use SSL version 3. Use this if cURL
      *  is compiled with GnuTLS SSL.
      *
-     * @var boolean
+     * @var bool
      */
     public $force_ssl_v3 = false;
 
@@ -42,7 +41,7 @@ class PaypalIPNListener
      *  If true, cURL will use the CURLOPT_FOLLOWLOCATION to follow any
      *  "Location: ..." headers in the response.
      *
-     * @var boolean
+     * @var bool
      */
     public $follow_location = false;
 
@@ -51,7 +50,7 @@ class PaypalIPNListener
      *  as recommended by PayPal. If false, a standard HTTP (port 80) connection
      *  is used. Default true.
      *
-     * @var boolean
+     * @var bool
      */
     public $use_ssl = true;
 
@@ -59,7 +58,7 @@ class PaypalIPNListener
      *  If true, the paypal sandbox URI www.sandbox.paypal.com is used for the
      *  post back. If false, the live URI www.paypal.com is used. Default false.
      *
-     * @var boolean
+     * @var bool
      */
     public $use_sandbox = false;
 
@@ -71,13 +70,13 @@ class PaypalIPNListener
      */
     public $timeout = 30;
 
-    private $post_data = array();
+    private $post_data = [];
     private $post_uri = '';
     private $response_status = '';
     private $response = '';
 
-    const PAYPAL_HOST = 'www.paypal.com';
-    const SANDBOX_HOST = 'ipnpb.paypal.com';
+    public const PAYPAL_HOST = 'www.paypal.com';
+    public const SANDBOX_HOST = 'ipnpb.paypal.com';
 
     /**
      *  Post Back Using cURL
@@ -87,12 +86,12 @@ class PaypalIPNListener
      *  exception if the post fails. Populates the response, response_status,
      *  and post_uri properties on success.
      *
-     * @param  string $encoded_data The post data as a URL encoded string
+     * @param string $encoded_data The post data as a URL encoded string
+     *
      * @throws Exception
      */
     protected function curlPost($encoded_data)
     {
-
         if ($this->use_ssl) {
             $uri = 'https://' . $this->getPaypalHost() . '/cgi-bin/webscr';
         } else {
@@ -104,8 +103,11 @@ class PaypalIPNListener
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !$this->use_sandbox);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_CAINFO,
-            __DIR__ . '/cert/cacert.pem');
+        curl_setopt(
+            $ch,
+            CURLOPT_CAINFO,
+            __DIR__ . '/cert/cacert.pem'
+        );
         curl_setopt($ch, CURLOPT_URL, $uri);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded_data);
@@ -116,12 +118,12 @@ class PaypalIPNListener
         curl_setopt($ch, CURLOPT_SSLVERSION, 6);
 
         $this->response = curl_exec($ch);
-        $this->response_status = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $this->response_status = (string) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if ($this->response === false || $this->response_status == '0') {
             $errno = curl_errno($ch);
             $errstr = curl_error($ch);
-            throw new Exception("cURL error: [$errno] $errstr");
+            throw new Exception("cURL error: [{$errno}] {$errstr}");
         }
     }
 
@@ -133,12 +135,12 @@ class PaypalIPNListener
      *  exception if the post fails. Populates the response, response_status,
      *  and post_uri properties on success.
      *
-     * @param  string $encoded_data The post data as a URL encoded string
+     * @param string $encoded_data The post data as a URL encoded string
+     *
      * @throws Exception
      */
     protected function fsockPost($encoded_data)
     {
-
         if ($this->use_ssl) {
             $uri = 'ssl://' . $this->getPaypalHost();
             $port = '443';
@@ -153,13 +155,13 @@ class PaypalIPNListener
 
         if (!$fp) {
             // fsockopen error
-            throw new Exception("fsockopen error: [$errno] $errstr");
+            throw new Exception("fsockopen error: [{$errno}] {$errstr}");
         }
 
         $header = "POST /cgi-bin/webscr HTTP/1.1\r\n";
-        $header .= "Host: " . $this->getPaypalHost() . "\r\n";
+        $header .= 'Host: ' . $this->getPaypalHost() . "\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $header .= "Content-Length: " . strlen($encoded_data) . "\r\n";
+        $header .= 'Content-Length: ' . strlen($encoded_data) . "\r\n";
         $header .= "Connection: Close\r\n\r\n";
 
         fwrite($fp, $header . $encoded_data . "\r\n\r\n");
@@ -179,8 +181,11 @@ class PaypalIPNListener
 
     private function getPaypalHost()
     {
-        if ($this->use_sandbox) return self::SANDBOX_HOST;
-        else return self::PAYPAL_HOST;
+        if ($this->use_sandbox) {
+            return self::SANDBOX_HOST;
+        } else {
+            return self::PAYPAL_HOST;
+        }
     }
 
     /**
@@ -236,26 +241,26 @@ class PaypalIPNListener
     {
         $r = '';
         // date and POST url
-        for ($i = 0; $i < 80; $i++) {
+        for ($i = 0; $i < 80; ++$i) {
             $r .= '-';
         }
         $r .= "\n[" . date('m/d/Y g:i A') . '] - ' . $this->getPostUri();
         $r .= $this->use_curl ? " (curl)\n" : $r .= " (fsockopen)\n";
 
         // HTTP Response
-        for ($i = 0; $i < 80; $i++) {
+        for ($i = 0; $i < 80; ++$i) {
             $r .= '-';
         }
         $r .= "\n{$this->getResponse()}\n";
 
         // POST vars
-        for ($i = 0; $i < 80; $i++) {
+        for ($i = 0; $i < 80; ++$i) {
             $r .= '-';
         }
         $r .= "\n";
 
         foreach ($this->post_data as $key => $value) {
-            $r .= str_pad($key, 25) . "$value\n";
+            $r .= str_pad($key, 25) . "{$value}\n";
         }
         $r .= "\n\n";
 
@@ -271,12 +276,14 @@ class PaypalIPNListener
      *  throws an exception if there is an error.
      *
      * @param array
+     * @param null|mixed $post_data
+     *
      * @return bool
+     *
      * @throws Exception
      */
     public function processIpn($post_data = null)
     {
-
         $encoded_data = 'cmd=_notify-validate';
 
         if ($post_data === null) {
@@ -285,30 +292,35 @@ class PaypalIPNListener
                 $this->post_data = $_POST;
                 $encoded_data .= '&' . file_get_contents('php://input');
             } else {
-                throw new Exception("No POST data found.");
+                throw new Exception('No POST data found.');
             }
         } else {
             // use provided data array
             $this->post_data = $post_data;
 
             foreach ($this->post_data as $key => $value) {
-                $encoded_data .= "&$key=" . urlencode($value);
+                $encoded_data .= "&{$key}=" . urlencode($value);
             }
         }
 
-        if ($this->use_curl) $this->curlPost($encoded_data);
-        else $this->fsockPost($encoded_data);
-
-        if (strpos($this->response_status, '200') === false) {
-            throw new Exception("Invalid response status: " . $this->response_status);
+        if ($this->use_curl) {
+            $this->curlPost($encoded_data);
+        } else {
+            $this->fsockPost($encoded_data);
         }
 
-        if (strpos($this->response, "VERIFIED") !== false) {
+        if (strpos($this->response_status, '200') === false) {
+            throw new Exception('Invalid response status: ' . $this->response_status);
+        }
+
+        if (strpos($this->response, 'VERIFIED') !== false) {
             return true;
-        } elseif (strpos($this->response, "INVALID") !== false) {
+        }
+
+        if (strpos($this->response, 'INVALID') !== false) {
             return false;
         } else {
-            throw new Exception("Unexpected response from PayPal.");
+            throw new Exception('Unexpected response from PayPal.');
         }
     }
 
@@ -317,6 +329,7 @@ class PaypalIPNListener
      *
      *  Throws an exception and sets a HTTP 405 response header if the request
      *  method was not POST.
+     *
      * @throws Exception
      */
     public function requirePostMethod()
@@ -324,8 +337,7 @@ class PaypalIPNListener
         // require POST requests
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Allow: POST', true, 405);
-            throw new Exception("Invalid HTTP request method.");
+            throw new Exception('Invalid HTTP request method.');
         }
     }
 }
-
