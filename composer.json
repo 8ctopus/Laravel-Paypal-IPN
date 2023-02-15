@@ -12,13 +12,25 @@
             "email": "thebdcoder@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
-        "php": ">=7"
+        "php": ">=7.0"
     },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "phpstan/phpstan": "^1.9",
+        "phpmd/phpmd": "^2.13"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Oct8pus\\PaypalIPN\\": "src/"
         }
+    },
+    "scripts": {
+        "fix": "php-cs-fixer fix --verbose",
+        "fix-risky": "php-cs-fixer fix --allow-risky=yes --verbose",
+        "phpstan": "phpstan analyse --level 9 src",
+        "phpmd": "phpmd src ansi phpmd.xml"
     }
 }
