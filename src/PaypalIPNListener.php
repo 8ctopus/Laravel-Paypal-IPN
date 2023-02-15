@@ -30,7 +30,7 @@ class PaypalIPNListener
      *
      * @var bool
      */
-    public $use_curl = true;
+    public bool $use_curl = true;
 
     /**
      *  If true, explicitly sets cURL to use SSL version 3. Use this if cURL
@@ -38,7 +38,7 @@ class PaypalIPNListener
      *
      * @var bool
      */
-    public $force_ssl_v3 = false;
+    public bool $force_ssl_v3 = false;
 
     /**
      *  If true, cURL will use the CURLOPT_FOLLOWLOCATION to follow any
@@ -46,7 +46,7 @@ class PaypalIPNListener
      *
      * @var bool
      */
-    public $follow_location = false;
+    public bool $follow_location = false;
 
     /**
      *  If true, an SSL secure connection (port 443) is used for the post back
@@ -55,7 +55,7 @@ class PaypalIPNListener
      *
      * @var bool
      */
-    public $use_ssl = true;
+    public bool $use_ssl = true;
 
     /**
      *  If true, the paypal sandbox URI www.sandbox.paypal.com is used for the
@@ -63,7 +63,7 @@ class PaypalIPNListener
      *
      * @var bool
      */
-    public $use_sandbox = false;
+    public bool $use_sandbox = false;
 
     /**
      *  The amount of time, in seconds, to wait for the PayPal server to respond
@@ -71,7 +71,7 @@ class PaypalIPNListener
      *
      * @var int
      */
-    public $timeout = 30;
+    public int $timeout = 30;
 
     private $post_data = [];
     private $post_uri = '';
@@ -87,7 +87,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getPostUri()
+    public function getPostUri(): string
     {
         return $this->post_uri;
     }
@@ -100,7 +100,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getResponse()
+    public function getResponse(): string
     {
         return $this->response;
     }
@@ -113,7 +113,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getResponseStatus()
+    public function getResponseStatus(): string
     {
         return $this->response_status;
     }
@@ -127,7 +127,7 @@ class PaypalIPNListener
      *
      * @return string
      */
-    public function getTextReport()
+    public function getTextReport(): string
     {
         $r = '';
         // date and POST url
@@ -165,14 +165,13 @@ class PaypalIPNListener
      *  back as "VERIFIED", false if the response came back "INVALID", and
      *  throws an exception if there is an error.
      *
-     * @param array
-     * @param null|mixed $post_data
+     * @param ?array $post_data
      *
      * @return bool
      *
      * @throws Exception
      */
-    public function processIpn($post_data = null)
+    public function processIpn(?array $post_data = null): bool
     {
         $encoded_data = 'cmd=_notify-validate';
 
@@ -222,7 +221,7 @@ class PaypalIPNListener
      *
      * @throws Exception
      */
-    public function requirePostMethod()
+    public function requirePostMethod(): void
     {
         // require POST requests
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -243,7 +242,7 @@ class PaypalIPNListener
      *
      * @throws Exception
      */
-    protected function curlPost($encoded_data)
+    protected function curlPost(string $encoded_data): void
     {
         if ($this->use_ssl) {
             $uri = 'https://' . $this->getPaypalHost() . '/cgi-bin/webscr';
@@ -292,7 +291,7 @@ class PaypalIPNListener
      *
      * @throws Exception
      */
-    protected function fsockPost($encoded_data)
+    protected function fsockPost(string $encoded_data): void
     {
         if ($this->use_ssl) {
             $uri = 'ssl://' . $this->getPaypalHost();

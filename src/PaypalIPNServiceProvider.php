@@ -11,7 +11,7 @@ class PaypalIPNServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
@@ -21,7 +21,7 @@ class PaypalIPNServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->make('Fahim\PaypalIPN\PaypalIPNListener');
     }
