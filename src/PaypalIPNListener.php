@@ -21,6 +21,9 @@ use Exception;
  */
 class PaypalIPNListener
 {
+    public const PAYPAL_HOST = 'www.paypal.com';
+    public const SANDBOX_HOST = 'ipnpb.paypal.com';
+
     /**
      *  If true, the recommended cURL PHP library is used to send the post back
      *  to PayPal. If flase then fsockopen() is used. Default true.
@@ -74,119 +77,6 @@ class PaypalIPNListener
     private $post_uri = '';
     private $response_status = '';
     private $response = '';
-
-    public const PAYPAL_HOST = 'www.paypal.com';
-    public const SANDBOX_HOST = 'ipnpb.paypal.com';
-
-    /**
-     *  Post Back Using cURL
-     *
-     *  Sends the post back to PayPal using the cURL library. Called by
-     *  the processIpn() method if the use_curl property is true. Throws an
-     *  exception if the post fails. Populates the response, response_status,
-     *  and post_uri properties on success.
-     *
-     * @param string $encoded_data The post data as a URL encoded string
-     *
-     * @throws Exception
-     */
-    protected function curlPost($encoded_data)
-    {
-        if ($this->use_ssl) {
-            $uri = 'https://' . $this->getPaypalHost() . '/cgi-bin/webscr';
-        } else {
-            $uri = 'http://' . $this->getPaypalHost() . '/cgi-bin/webscr';
-        }
-        $this->post_uri = $uri;
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !$this->use_sandbox);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt(
-            $ch,
-            CURLOPT_CAINFO,
-            __DIR__ . '/cert/cacert.pem'
-        );
-        curl_setopt($ch, CURLOPT_URL, $uri);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded_data);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $this->follow_location);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
-
-        $this->response = curl_exec($ch);
-        $this->response_status = (string) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($this->response === false || $this->response_status == '0') {
-            $errno = curl_errno($ch);
-            $errstr = curl_error($ch);
-            throw new Exception("cURL error: [{$errno}] {$errstr}");
-        }
-    }
-
-    /**
-     *  Post Back Using fsockopen()
-     *
-     *  Sends the post back to PayPal using the fsockopen() function. Called by
-     *  the processIpn() method if the use_curl property is false. Throws an
-     *  exception if the post fails. Populates the response, response_status,
-     *  and post_uri properties on success.
-     *
-     * @param string $encoded_data The post data as a URL encoded string
-     *
-     * @throws Exception
-     */
-    protected function fsockPost($encoded_data)
-    {
-        if ($this->use_ssl) {
-            $uri = 'ssl://' . $this->getPaypalHost();
-            $port = '443';
-            $this->post_uri = $uri . '/cgi-bin/webscr';
-        } else {
-            $uri = $this->getPaypalHost(); // no "http://" in call to fsockopen()
-            $port = '80';
-            $this->post_uri = 'http://' . $uri . '/cgi-bin/webscr';
-        }
-
-        $fp = fsockopen($uri, $port, $errno, $errstr, $this->timeout);
-
-        if (!$fp) {
-            // fsockopen error
-            throw new Exception("fsockopen error: [{$errno}] {$errstr}");
-        }
-
-        $header = "POST /cgi-bin/webscr HTTP/1.1\r\n";
-        $header .= 'Host: ' . $this->getPaypalHost() . "\r\n";
-        $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $header .= 'Content-Length: ' . strlen($encoded_data) . "\r\n";
-        $header .= "Connection: Close\r\n\r\n";
-
-        fwrite($fp, $header . $encoded_data . "\r\n\r\n");
-
-        while (!feof($fp)) {
-            if (empty($this->response)) {
-                // extract HTTP status from first line
-                $this->response .= $status = fgets($fp, 1024);
-                $this->response_status = trim(substr($status, 9, 4));
-            } else {
-                $this->response .= fgets($fp, 1024);
-            }
-        }
-
-        fclose($fp);
-    }
-
-    private function getPaypalHost()
-    {
-        if ($this->use_sandbox) {
-            return self::SANDBOX_HOST;
-        } else {
-            return self::PAYPAL_HOST;
-        }
-    }
 
     /**
      *  Get POST URI
@@ -338,6 +228,116 @@ class PaypalIPNListener
         if ($_SERVER['REQUEST_METHOD'] && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Allow: POST', true, 405);
             throw new Exception('Invalid HTTP request method.');
+        }
+    }
+
+    /**
+     *  Post Back Using cURL
+     *
+     *  Sends the post back to PayPal using the cURL library. Called by
+     *  the processIpn() method if the use_curl property is true. Throws an
+     *  exception if the post fails. Populates the response, response_status,
+     *  and post_uri properties on success.
+     *
+     * @param string $encoded_data The post data as a URL encoded string
+     *
+     * @throws Exception
+     */
+    protected function curlPost($encoded_data)
+    {
+        if ($this->use_ssl) {
+            $uri = 'https://' . $this->getPaypalHost() . '/cgi-bin/webscr';
+        } else {
+            $uri = 'http://' . $this->getPaypalHost() . '/cgi-bin/webscr';
+        }
+        $this->post_uri = $uri;
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !$this->use_sandbox);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt(
+            $ch,
+            CURLOPT_CAINFO,
+            __DIR__ . '/cert/cacert.pem'
+        );
+        curl_setopt($ch, CURLOPT_URL, $uri);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded_data);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $this->follow_location);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+
+        $this->response = curl_exec($ch);
+        $this->response_status = (string) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($this->response === false || $this->response_status == '0') {
+            $errno = curl_errno($ch);
+            $errstr = curl_error($ch);
+            throw new Exception("cURL error: [{$errno}] {$errstr}");
+        }
+    }
+
+    /**
+     *  Post Back Using fsockopen()
+     *
+     *  Sends the post back to PayPal using the fsockopen() function. Called by
+     *  the processIpn() method if the use_curl property is false. Throws an
+     *  exception if the post fails. Populates the response, response_status,
+     *  and post_uri properties on success.
+     *
+     * @param string $encoded_data The post data as a URL encoded string
+     *
+     * @throws Exception
+     */
+    protected function fsockPost($encoded_data)
+    {
+        if ($this->use_ssl) {
+            $uri = 'ssl://' . $this->getPaypalHost();
+            $port = '443';
+            $this->post_uri = $uri . '/cgi-bin/webscr';
+        } else {
+            $uri = $this->getPaypalHost(); // no "http://" in call to fsockopen()
+            $port = '80';
+            $this->post_uri = 'http://' . $uri . '/cgi-bin/webscr';
+        }
+
+        $fp = fsockopen($uri, $port, $errno, $errstr, $this->timeout);
+
+        if (!$fp) {
+            // fsockopen error
+            throw new Exception("fsockopen error: [{$errno}] {$errstr}");
+        }
+
+        $header = "POST /cgi-bin/webscr HTTP/1.1\r\n";
+        $header .= 'Host: ' . $this->getPaypalHost() . "\r\n";
+        $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
+        $header .= 'Content-Length: ' . strlen($encoded_data) . "\r\n";
+        $header .= "Connection: Close\r\n\r\n";
+
+        fwrite($fp, $header . $encoded_data . "\r\n\r\n");
+
+        while (!feof($fp)) {
+            if (empty($this->response)) {
+                // extract HTTP status from first line
+                $this->response .= $status = fgets($fp, 1024);
+                $this->response_status = trim(substr($status, 9, 4));
+            } else {
+                $this->response .= fgets($fp, 1024);
+            }
+        }
+
+        fclose($fp);
+    }
+
+    private function getPaypalHost()
+    {
+        if ($this->use_sandbox) {
+            return self::SANDBOX_HOST;
+        } else {
+            return self::PAYPAL_HOST;
         }
     }
 }
