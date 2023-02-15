@@ -73,10 +73,13 @@ class PaypalIPNListener
      */
     public int $timeout = 30;
 
-    private $post_data = [];
-    private $post_uri = '';
-    private $response_status = '';
-    private $response = '';
+    /**
+     * @var array<string>
+     */
+    private array $post_data = [];
+    private string $post_uri = '';
+    private string $response_status = '';
+    private string $response = '';
 
     /**
      *  Get POST URI
@@ -165,7 +168,7 @@ class PaypalIPNListener
      *  back as "VERIFIED", false if the response came back "INVALID", and
      *  throws an exception if there is an error.
      *
-     * @param ?array $post_data
+     * @param ?array<string> $post_data
      *
      * @return bool
      *
@@ -269,14 +272,16 @@ class PaypalIPNListener
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_SSLVERSION, 6);
 
-        $this->response = curl_exec($ch);
+        $response = curl_exec($ch);
         $this->response_status = (string) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($this->response === false || $this->response_status == '0') {
+        if ($response === false || $this->response_status == '0') {
             $errno = curl_errno($ch);
             $errstr = curl_error($ch);
             throw new Exception("cURL error: [{$errno}] {$errstr}");
         }
+
+        $this->response = $response;
     }
 
     /**
@@ -295,11 +300,12 @@ class PaypalIPNListener
     {
         if ($this->use_ssl) {
             $uri = 'ssl://' . $this->getPaypalHost();
-            $port = '443';
+            $port = 443;
             $this->post_uri = $uri . '/cgi-bin/webscr';
         } else {
-            $uri = $this->getPaypalHost(); // no "http://" in call to fsockopen()
-            $port = '80';
+            // no "http://" in call to fsockopen()
+            $uri = $this->getPaypalHost();
+            $port = 80;
             $this->post_uri = 'http://' . $uri . '/cgi-bin/webscr';
         }
 
@@ -331,7 +337,7 @@ class PaypalIPNListener
         fclose($fp);
     }
 
-    private function getPaypalHost()
+    private function getPaypalHost() : string
     {
         if ($this->use_sandbox) {
             return self::SANDBOX_HOST;
