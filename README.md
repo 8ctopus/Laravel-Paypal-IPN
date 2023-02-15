@@ -13,20 +13,14 @@ add this to your "require" in composer.json
 
     "8ctopus/laravel-paypal-ipn": "1.0.*"
 
-
-PHP-PayPal-IPN
-==============
-
-A PayPal Instant Payment Notification (IPN) class for PHP 5. 
-
-Use the `PaypalIPNListener` class in your PHP IPN script to handle the encoding 
-of POST data, post back to PayPal, and parsing of the response from PayPal.
+Use the `PaypalIPNListener` class in your PHP IPN script to handle the encoding of POST data, post back to PayPal, and parsing of the response from PayPal.
 
 Service for Laravel
 
 	'Oct8pus\PaypalIPN\PaypalIPNServiceProvider',
 		
 Use case
+
 ```php
 use Oct8pus\PaypalIPN\PaypalIPNListener;
 
@@ -53,6 +47,7 @@ public function paypalIpn()
     }
 }
 ```
+
 Features
 --------
 
@@ -119,8 +114,8 @@ SSL 3:
 $listener = new IpnListener();
 $listener->force_ssl_v3 = true;
 ```
-_Note: force_ssl_v3 is now true by default_
 
+_Note: force_ssl_v3 is now true by default_
 
 
 __Problem__
@@ -132,10 +127,12 @@ __Solution__
 
 If you need PHP safe mode, you can disable CURLOPT_FOLLOWLOCATION using the
 `follow_location` property.
+
 ```php
 $listener = new IpnListener();
 $listener->follow_location = false;
 ```
+
 _Note: follow_location is now false enabled by default_
 
 
