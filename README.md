@@ -1,9 +1,9 @@
 # PayPal IPN for laravel
 
-[![Latest Stable Version](http://poser.pugx.org/8ctopus/laravel-paypal-ipn/v)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
-[![Total Downloads](http://poser.pugx.org/8ctopus/laravel-paypal-ipn/downloads)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
-[![PHP Version Require](http://poser.pugx.org/8ctopus/laravel-paypal-ipn/require/php)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
-[![License](http://poser.pugx.org/8ctopus/laravel-paypal-ipn/license)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
+[![Latest Stable Version](https://poser.pugx.org/8ctopus/laravel-paypal-ipn/v)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
+[![Total Downloads](https://poser.pugx.org/8ctopus/laravel-paypal-ipn/downloads)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
+[![PHP Version Require](https://poser.pugx.org/8ctopus/laravel-paypal-ipn/require/php)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
+[![License](https://poser.pugx.org/8ctopus/laravel-paypal-ipn/license)](https://packagist.org/packages/8ctopus/laravel-paypal-ipn)
 
 This Package is a detached fork of
 
